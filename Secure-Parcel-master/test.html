@@ -1,0 +1,272 @@
+<h1 id="et0731">ET0731</h1>
+<h1 id="introduction">Introduction</h1>
+<p>Online shopping has exploded in popularity over the past few years. Due to its sheer convenience, as items can be purchased in just a few clicks and have it delivered to your door steps it is no wonder that online shopping is thriving. The problem with online shopping arise when the owner is not at home. Sure, the delivery driver could leave it at the doorstep but having the constant worry when you are at work or outside, praying that your parcel will not get stolen is not a good feeling hence, our group decided to implement secure parcel which allows the parcel delivered to be stored secure and not accessible to unauthorised person.</p>
+<h1 id="the-team">The Team</h1>
+<p>This project is implemented with a team of four:<br/>
+ 1)Zi Xiong (1946965)
+ 2)Ashwin (1802360)
+ 3)Rusyaidi (1821149)
+ 4)Liang Zhi (1821347)</p>
+<h1 id="features">Features</h1>
+<h3 id="telegram-bot">Telegram bot</h3>
+<p>The telegram bot handles the inputs from the user as well as outputs to the user. There are many commands to use when inputting to the bot, they are as follow:</p>
+<ol>
+<li><p>unlock</p>
+<ul>
+<li>Only authorised user are allowed to use this command.</li>
+<li>Typing unlock will unlock the parcel remotely.</li>
+<li>Once the box has been unlocked, the telegram bot will reply to inform the user that it is unlocked.</li>
+</ul>
+</li>
+<li><p>lock</p>
+<ul>
+<li>Only authorised user are allowed to use this command</li>
+<li>Typing lock will lock the parcel remotely</li>
+<li>Once the box has been locked, the telegram bot will reply to inform the user that it is locked</li>
+</ul>
+</li>
+<li><p>storeface</p>
+<ul>
+<li>This command will store the user face into the the flash memory of the AI on Edge.</li>
+<li>User face has to face the camera and when there is outline of the face appearing in the LCD screen, send the storeface command.</li>
+<li>Once the face has been stored, user will be notified by the telegram bot.</li>
+</ul>
+</li>
+</ol>
+<h3 id="ai-on-edge">AI on Edge</h3>
+<p>The AI on Edge only works for face that are stored in the flash memory hence, it is important to not store unauthorised face in the memory. When the camera detect the face of the person and it matches the face that is stored in the flash memory (0.85 accuracy score is required), the box will be unlocked. The purpose of the AI on edge is to allow for convenience when unlocking the parcel as all you have to do is face the camera and the box will be unlocked.</p>
+<h3 id="amazon-web-services">Amazon Web Services</h3>
+<ol>
+<li><p>Lambda</p>
+<ol>
+<li>Receive commands from the user</li>
+<li>Send Command to the users</li>
+<li>Interacts with AWS IoT topic.
+<img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/lambda.png" alt="image"></li>
+</ol>
+</li>
+<li><p>IoT Core</p>
+<ol>
+<li>Connects ESP32 to cloud</li>
+<li>Device has its own publish/subscribe topic</li>
+<li>Uses secure protocol MQTTS to communicate
+<img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/iot.png" alt="image"></li>
+</ol>
+</li>
+<li><p>API gateway</p>
+<ol>
+<li>Create a rest api for the telegram bot</li>
+<li>After developing a rest api, invoke url will be created to hook it to telegram</li>
+<li>Once hooked to telegram api, telegram bot can receive and send commands to AWS.
+<img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/awsapi.png" alt="image"></li>
+</ol>
+</li>
+<li><p>Cloudtrail</p>
+<ol>
+<li>Logs down suspicious api request
+<img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/cloudtrail.jpeg" alt="image"></li>
+</ol>
+</li>
+</ol>
+<h1 id="security-features">Security Features</h1>
+<p><strong>TLS Security:</strong> AWS IoT message broker uses TLS version 1.2 to encrypt all communication. TLS is used to ensure the confidentiality of the application protocols. For MQTT, TLS encrypts the connection between the device and the broker. TLS client authentication is also used to identify devices. </p>
+<p><strong>AWS IoT Device Security:</strong> Each device identifies itself and authenticates to the cloud using a X.509 certificate. Policies are used to control access rights of each device.</p>
+<p><strong>Use strong and unique passwords for WiFi network:</strong> Use long password with different mix characters. Such characters include a mixture of upper and lower case alphabet, numbers and characters such as (!#%*) so that our password is strong and unique.</p>
+<p><strong>Use of HTTPS:</strong> Device Certificates are requested via HTTPS instead of HTTP which is more secured as data are encrypted before transmission.</p>
+<p><strong>Telegram Bot:</strong> Only Authorized Users can use the bot and custom commands are created such that only authorized users know how to use it</p>
+<p><strong>API Security:</strong> Unique API keys are used to connect telegram to AWS Lambda.</p>
+<p><strong>AI on Edge:</strong> Connected locally and hence has no access to internet.</p>
+<h1 id="product-infrastructure">Product Infrastructure</h1>
+<p><strong>Network Diagram</strong></br>
+<img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/ProductInfrastructure.JPG" alt="image"></p>
+<p>**E</p>
+<h1 id="timing-diagram">Timing Diagram</h1>
+<p><img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/timeline.JPG" alt="image"><br/></p>
+<h1 id="how-to-use">How to use</h1>
+<h3 id="step-1-registering-a-telegram-account">Step 1 - Registering a telegram account</h3>
+<p>To use this bot, the user has to create a telegram account. Some particulars are required such as phone number and their name.</p>
+<h3 id="step-2-bot-setup">Step 2 - Bot setup</h3>
+<p>After registering, the user will now need to allow the bot to send and receive message from the user by typing /start. Once this has been setup, user can check if they are authorised to send commands to the bot. If the user is not authorised, they bot will inform the user that he/she is not authorised.</p>
+<h3 id="step-3-unlocking-and-locking">Step 3 - Unlocking and locking</h3>
+<p>There are two ways to unlock the parcel. The first way is to send a &quot;unlock&quot; command to the telgram bot. Once the box has been unlocked, the user will be notified that the box has been unlocked. Another way to unlock the parcel is using the user face. The user has to send &quot;storeface&quot; command to the telegram bot facing the camera. Once this is done, user can now freely unlock the box by facing the camera. If the face is authorised (above 0.85 accuracy), the box will be unlocked.</p>
+<p>To lock the box, the user will send &quot;lock&quot; command to the telegram bot. Once the bot has been locked, the user will get a reply from the telegram bot that the box has been unlocked.</p>
+<h1 id="penetration-testing-with-kali-linux">Penetration testing With Kali Linux</h1>
+<p>To test the security of the network, we are using kali linux aircrack to try and crack the WPA-2 secured wifi network.
+Tools required are VM with kali linux installed, in this case we are using oracle vm virtual box. A WiFi adapter is also required.</p>
+<p>The first step is to start our wifi adapter to start collecting packets and to do so, we type sudo airmon-ng start wlan0mon in the kali linux terminal.</p>
+<p>After which, we type sudo airodump-ng wlan0mon in the terminal to get the necessary information to attack the network. Information required are the BSSID of the network, channel number and the security used which in this case the BSSID is D4:63:FE:F1:CB:10, channel number is 11 and security used is WPA-2.</br>
+<img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/getwifiinfo.PNG" alt="image"></br></p>
+<p>To start cracking the wifi using a password list, we first have to initiate a 4 way authentication handshake and we type airodump-ng -c 11 --bssid D4:63:FE:F1:CB:10 -w out wlan0mon in the terminal
+<img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/settinghandshake.PNG" alt="image"></br></p>
+<pre><code>-c <span class="hljs-number">9</span> <span class="hljs-keyword">is</span> <span class="hljs-keyword">the</span> channel <span class="hljs-keyword">for</span> <span class="hljs-keyword">the</span> wireless network
+<span class="hljs-comment">--bssid D4:63:FE:F1:CB:10 is the access point MAC address. This eliminates extraneous traffic.</span>
+-w out <span class="hljs-keyword">is</span> <span class="hljs-keyword">the</span> <span class="hljs-built_in">file</span> <span class="hljs-built_in">name</span> prefix <span class="hljs-keyword">for</span> <span class="hljs-keyword">the</span> <span class="hljs-built_in">file</span> which will <span class="hljs-keyword">contain</span> <span class="hljs-keyword">the</span> IVs.
+wlan0mon <span class="hljs-keyword">is</span> <span class="hljs-keyword">the</span> interface <span class="hljs-built_in">name</span>.
+</code></pre><p>After this, we have to wait awhile to capture the 4 way authentication handshake. If you see WPA handshake: D4:63:FE:F1:CB on the top right, it means that you have successfully created the 4 way authentication handshake and you can start attacking the network using the password list, if not you have to wait or speed thing us by sending a deauth to the network you are attacking.</p>
+<p><img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/kali1.PNG" alt="image"></p>
+<p>To speed up the process, we type in aireplay-ng -0 1 -a D4:63:FE:F1:CB:10 -c D4:63:FE:F1:CB:10 wlan0mon to the terminal to speed up the capturing of 4 way handshake.
+<img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/kali2.PNG" alt="image"></p>
+<pre><code><span class="hljs-number">-0</span> means deauthentication
+<span class="hljs-number">1</span> is <span class="hljs-keyword">the</span> <span class="hljs-built_in">number</span> <span class="hljs-keyword">of</span> deauths <span class="hljs-built_in">to</span> <span class="hljs-built_in">send</span> (you can <span class="hljs-built_in">send</span> multiple <span class="hljs-keyword">if</span> you wish)
+-<span class="hljs-keyword">a</span> D4:<span class="hljs-number">63</span>:FE:F1:CB:<span class="hljs-number">10</span> is <span class="hljs-keyword">the</span> MAC address <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> access point
+-c D4:<span class="hljs-number">63</span>:FE:F1:CB:<span class="hljs-number">10</span> is <span class="hljs-keyword">the</span> MAC address <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> client you are deauthing
+wlan0mon is <span class="hljs-keyword">the</span> interface name
+</code></pre><p>Once you have captured the handshake, you can type aircrack-ng -w password.lst -b D4:63:FE:F1:CB:10 out-01.cap</p>
+<pre><code>-w password.lst is <span class="hljs-keyword">the</span> name <span class="hljs-keyword">of</span> <span class="hljs-keyword">the</span> dictionary <span class="hljs-built_in">file</span>. Remember <span class="hljs-built_in">to</span> specify <span class="hljs-keyword">the</span> full path <span class="hljs-keyword">if</span> <span class="hljs-keyword">the</span> <span class="hljs-built_in">file</span> is <span class="hljs-keyword">not</span> located <span class="hljs-keyword">in</span> <span class="hljs-keyword">the</span> same <span class="hljs-built_in">directory</span>.
+out<span class="hljs-number">-01.</span>cap is name <span class="hljs-keyword">of</span> group <span class="hljs-keyword">of</span> <span class="hljs-built_in">files</span> containing <span class="hljs-keyword">the</span> captured packets. 
+</code></pre><p><img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/kali3.PNG" alt="image"></p>
+<p><img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/kali4.jpeg" alt="image"></p>
+<h1 id="compliance-checklist">Compliance checklist</h1>
+<h3 id="dread-risk-assessment">Dread risk assessment</h3>
+<table>
+<thead>
+<tr>
+<th></th>
+<th>DREAD RISK</th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+<th></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Attack</td>
+<td>Damage Potential</td>
+<td>Reproducibility</td>
+<td>Exploitability</td>
+<td>Affected Users</td>
+<td>Discoverablity</td>
+<td>Risk (MAX=5)</td>
+</tr>
+<tr>
+<td>WiFi access</td>
+<td>5</td>
+<td>5</td>
+<td>4</td>
+<td>4</td>
+<td>1</td>
+<td>3.8</td>
+</tr>
+<tr>
+<td>Unauth connection (stolen)</td>
+<td>2</td>
+<td>4</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1.8</td>
+</tr>
+<tr>
+<td>Cloning of hardware</td>
+<td>5</td>
+<td>2</td>
+<td>3</td>
+<td>2</td>
+<td>1</td>
+<td>2.6</td>
+</tr>
+<tr>
+<td>Session hijack</td>
+<td>5</td>
+<td>1</td>
+<td>3</td>
+<td>1</td>
+<td>3</td>
+<td>2.6</td>
+</tr>
+<tr>
+<td>Physical</td>
+<td>4</td>
+<td>1</td>
+<td>3</td>
+<td>4</td>
+<td>1</td>
+<td>2.6</td>
+</tr>
+<tr>
+<td>RF jamming</td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>4</td>
+<td>2</td>
+<td>3.6</td>
+</tr>
+<tr>
+<td>Hardware Error</td>
+<td>3</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1</td>
+<td>1.4</td>
+</tr>
+<tr>
+<td>Man in the middle</td>
+<td>5</td>
+<td>2</td>
+<td>5</td>
+<td>1</td>
+<td>5</td>
+<td>3.4</td>
+</tr>
+<tr>
+<td>Modified data</td>
+<td>5</td>
+<td>2</td>
+<td>5</td>
+<td>1</td>
+<td>4</td>
+<td>3.4</td>
+</tr>
+<tr>
+<td>User ID Leak</td>
+<td>2</td>
+<td>1</td>
+<td>4</td>
+<td>2</td>
+<td>3</td>
+<td>2.5</td>
+</tr>
+<tr>
+<td>DDOS of API</td>
+<td>5</td>
+<td>5</td>
+<td>4</td>
+<td>2</td>
+<td>1</td>
+<td>4</td>
+</tr>
+<tr>
+<td>Redirect notification</td>
+<td>4</td>
+<td>1</td>
+<td>3</td>
+<td>1</td>
+<td>1</td>
+<td>2</td>
+</tr>
+<tr>
+<td>Botnet inclusion</td>
+<td>3</td>
+<td>1</td>
+<td>2</td>
+<td>1</td>
+<td>5</td>
+<td>2.4</td>
+</tr>
+<tr>
+<td>Cryptojacking</td>
+<td>1</td>
+<td>1</td>
+<td>4</td>
+<td>1</td>
+<td>4</td>
+<td>2.6</td>
+</tr>
+</tbody>
+</table>
+<h3 id="tr64-checklist">TR64 Checklist</h3>
+<p><img src="https://github.com/liang-zhi/Secure-Parcel/blob/master/image/TR64.JPG" alt="image"></p>
